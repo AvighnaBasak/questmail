@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar styles for all scrollable areas */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(120,120,120,0.15);
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120,120,120,0.3);
+}
+/* Hide scrollbar for non-hovered state (optional, uncomment to hide completely) */
+/*
+::-webkit-scrollbar {
+  display: none;
+}
+*/
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120,120,120,0.15) transparent;
+}

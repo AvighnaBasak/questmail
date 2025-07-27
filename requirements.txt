@@ -1,0 +1,10 @@
+pip install fastapi
+pip install uvicorn[standard]
+pip install supabase
+pip install asyncpg
+pip install python-jose[cryptography]
+pip install python-multipart
+pip install aiofiles
+pip install bleach
+pip install python-dotenv
+npm install dompurify @types/dompurify
