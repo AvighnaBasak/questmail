@@ -24,18 +24,18 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, currentUserId }) => 
   };
 
   return (
-    <div className="flex items-start space-x-3 p-3 hover:bg-white/5 transition-colors">
+    <div className="flex items-start space-x-2 lg:space-x-3 p-2 lg:p-3 hover:bg-white/5 transition-colors">
       {/* User Avatar */}
       <div className="flex-shrink-0">
-        <div className="w-10 h-10 bg-[#eb9e2b] rounded-full flex items-center justify-center text-black font-semibold text-sm">
+        <div className="w-8 h-8 lg:w-10 lg:h-10 bg-[#eb9e2b] rounded-full flex items-center justify-center text-black font-semibold text-xs lg:text-sm">
           {getInitial(message.email)}
         </div>
       </div>
 
       {/* Message Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center space-x-2 mb-1">
-          <span className="text-sm font-medium text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-2 mb-1">
+          <span className="text-xs lg:text-sm font-medium text-white">
             {isOwnMessage ? 'You' : message.username}
           </span>
           <span className="text-xs text-gray-400">
@@ -45,7 +45,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, currentUserId }) => 
             {formattedTime}
           </span>
         </div>
-        <div className="text-sm text-gray-300 leading-relaxed">
+        <div className="text-xs lg:text-sm text-gray-300 leading-relaxed">
           {message.message}
         </div>
       </div>

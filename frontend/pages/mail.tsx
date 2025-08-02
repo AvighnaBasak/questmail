@@ -8,6 +8,7 @@ import ChatView from '../components/ChatView';
 import ComposeModal from '../components/ComposeModal';
 import type { Mail } from '../components/MailList';
 import { supabase } from '../lib/supabaseClient';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const Mail = () => {
   const { user, loading } = useAuth();
@@ -17,6 +18,7 @@ const Mail = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [storageUsage, setStorageUsage] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -102,18 +104,43 @@ const Mail = () => {
   };
 
   return (
-    <div className="h-screen bg-black flex">
+    <div className="h-screen bg-black flex flex-col lg:flex-row">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      
       {/* Left Sidebar */}
-      <Sidebar 
-        onCompose={() => setShowCompose(true)} 
-        storageUsage={storageUsage}
-        currentFolder={folder}
-      />
+      <div className={`fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} transition-transform duration-300 ease-in-out`}>
+        <Sidebar 
+          onCompose={() => setShowCompose(true)} 
+          storageUsage={storageUsage}
+          currentFolder={folder}
+          onClose={() => setSidebarOpen(false)}
+        />
+      </div>
       
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col p-5 min-h-0 overflow-hidden">
-        {/* Header */}
-        <div className="mb-5 flex items-center gap-4">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        {/* Mobile Header */}
+        <div className="lg:hidden p-4 border-b border-white/10 flex items-center justify-between">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 text-gray-400 hover:text-white transition-colors"
+          >
+            <Bars3Icon className="w-6 h-6" />
+          </button>
+          <h1 className="text-lg font-bold text-white capitalize">
+            {folder === 'inbox' ? 'Inbox' : 
+             folder === 'sent' ? 'Sent Mail' :
+             folder === 'spam' ? 'Spam' :
+             folder === 'chat' ? 'Chat' : 'Trash'}
+          </h1>
+          <div className="w-10"></div> {/* Spacer for centering */}
+        </div>
+
+        {/* Desktop Header */}
+        <div className="hidden lg:flex mb-5 items-center gap-4 p-5">
           <h1 className="text-2xl font-bold text-white capitalize whitespace-nowrap">
             {folder === 'inbox' ? 'Inbox' : 
              folder === 'sent' ? 'Sent Mail' :
@@ -121,19 +148,33 @@ const Mail = () => {
              folder === 'chat' ? '' : 'Trash'}
           </h1>
           {folder !== 'chat' && (
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search mail..."
+            className="flex-1 px-5 py-3 bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-full focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/20 text-sm transition-all shadow-inner"
+            style={{ borderRadius: '2rem', minWidth: 0 }}
+          />
+          )}
+        </div>
+
+        {/* Mobile Search */}
+        {folder !== 'chat' && (
+          <div className="lg:hidden px-4 pb-4">
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search mail..."
-              className="ml-4 px-5 py-3 bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-full focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/20 text-sm transition-all shadow-inner flex-1"
-              style={{ borderRadius: '2rem', minWidth: 0 }}
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-full focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/20 text-sm transition-all shadow-inner"
+              style={{ borderRadius: '2rem' }}
             />
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Content Box */}
-        <div className="flex-1 bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex min-h-0 h-full">
+        <div className="flex-1 bg-white/5 backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-white/10 shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-0 h-full">
           {folder === 'chat' ? (
             /* Chat View */
             <div className="w-full h-full">
@@ -141,51 +182,75 @@ const Mail = () => {
             </div>
           ) : (
             <>
-              {/* Mail List Section */}
-              <div className="w-1/2 border-r border-white/10 relative h-full min-h-0 overflow-y-auto">
-                {folder === 'trash' && (
-                  <button
-                    className="absolute top-3 right-3 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-medium shadow-md transition-all z-10 border border-white/20"
-                    onClick={handleClearTrash}
-                  >
-                    Clear All
-                  </button>
-                )}
-                <MailList 
-                  onSelect={setSelectedMail} 
-                  refreshKey={refreshKey} 
-                  selectedMailId={selectedMail?.id}
-                  folder={folder}
-                  onRefresh={() => setRefreshKey(k => k + 1)}
-                  searchQuery={searchQuery}
-                />
-              </div>
+          {/* Mail List Section */}
+          <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-white/10 relative h-full min-h-0 overflow-y-auto">
+            {folder === 'trash' && (
+              <button
+                className="absolute top-3 right-3 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-2xl font-medium shadow-md transition-all z-10 border border-white/20"
+                onClick={handleClearTrash}
+              >
+                Clear All
+              </button>
+            )}
+            <MailList 
+              onSelect={setSelectedMail} 
+              refreshKey={refreshKey} 
+              selectedMailId={selectedMail?.id}
+              folder={folder}
+              onRefresh={() => setRefreshKey(k => k + 1)}
+              searchQuery={searchQuery}
+            />
+          </div>
 
-              {/* Mail View Section */}
-              <div className="flex-1 relative h-full min-h-0 overflow-y-auto">
-                {selectedMail ? (
-                  <MailView 
-                    mail={selectedMail} 
-                    onClose={() => setSelectedMail(null)}
-                    onRefresh={() => setRefreshKey(k => k + 1)}
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">Select a Mail</h3>
-                      <p className="text-gray-400">Choose a message from the list to read</p>
-                    </div>
+          {/* Desktop Mail View Section */}
+          <div className="hidden lg:flex flex-1 relative h-full min-h-0 overflow-y-auto">
+            {selectedMail ? (
+              <MailView 
+                mail={selectedMail} 
+                onClose={() => setSelectedMail(null)}
+                onRefresh={() => setRefreshKey(k => k + 1)}
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full w-full">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
                   </div>
-                )}
+                  <h3 className="text-xl font-semibold text-white mb-2">Select a Mail</h3>
+                  <p className="text-gray-400">Choose a message from the list to read</p>
+                </div>
               </div>
+            )}
+          </div>
             </>
           )}
         </div>
+
+        {/* Mobile Mail Overlay */}
+        {selectedMail && (
+          <div className="lg:hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-black/90 backdrop-blur-xl rounded-2xl border border-white/10 w-full h-full max-w-2xl max-h-[90vh] flex flex-col">
+              <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-white">Mail</h3>
+                <button
+                  onClick={() => setSelectedMail(null)}
+                  className="p-2 text-gray-400 hover:text-white transition-colors"
+                >
+                  <XMarkIcon className="w-6 h-6" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <MailView 
+                  mail={selectedMail} 
+                  onClose={() => setSelectedMail(null)}
+                  onRefresh={() => setRefreshKey(k => k + 1)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Compose Modal */}

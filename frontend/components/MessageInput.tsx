@@ -61,26 +61,26 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, onTyping, di
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border-t border-white/10">
-      <div className="flex items-end space-x-3">
+    <form onSubmit={handleSubmit} className="p-3 lg:p-4 border-t border-white/10">
+      <div className="flex items-end space-x-2 lg:space-x-3">
         <div className="flex-1">
           <textarea
             value={message}
             onChange={handleMessageChange}
             onKeyPress={handleKeyPress}
             placeholder="Type your message..."
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#eb9e2b]/50 focus:border-[#eb9e2b]/50 resize-none transition-all"
+            className="w-full px-3 lg:px-4 py-2.5 lg:py-3 bg-white/10 border border-white/20 text-white placeholder-gray-400 rounded-xl lg:rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#eb9e2b]/50 focus:border-[#eb9e2b]/50 resize-none transition-all text-sm lg:text-base"
             rows={1}
-            style={{ minHeight: '48px', maxHeight: '120px' }}
+            style={{ minHeight: '44px', maxHeight: '120px' }}
             disabled={disabled}
           />
         </div>
         <button
           type="submit"
           disabled={!message.trim() || disabled}
-          className="w-12 h-12 bg-[#eb9e2b] hover:bg-[#eb9e2b]/80 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-medium rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+          className="w-10 h-10 lg:w-12 lg:h-12 bg-[#eb9e2b] hover:bg-[#eb9e2b]/80 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-medium rounded-full shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
         >
-          <PaperAirplaneIcon className="w-4 h-4" />
+          <PaperAirplaneIcon className="w-3 h-3 lg:w-4 lg:h-4" />
         </button>
       </div>
     </form>

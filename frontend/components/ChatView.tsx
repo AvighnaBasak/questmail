@@ -230,14 +230,14 @@ const ChatView: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-white/10 flex items-center justify-between">
-        <h2 className="text-xl font-bold text-white">Chat</h2>
+      <div className="p-3 lg:p-4 border-b border-white/10 flex items-center justify-between">
+        <h2 className="text-lg lg:text-xl font-bold text-white">Chat</h2>
         <OnlineUsers onlineCount={onlineUsers.length} />
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="mx-4 mt-2 p-3 bg-red-500/20 border border-red-500/30 rounded-2xl text-red-300 text-sm">
+        <div className="mx-3 lg:mx-4 mt-2 p-2 lg:p-3 bg-red-500/20 border border-red-500/30 rounded-xl lg:rounded-2xl text-red-300 text-xs lg:text-sm">
           {error}
         </div>
       )}
@@ -272,7 +272,7 @@ const ChatView: React.FC = () => {
 
       {/* Typing Indicator */}
       {typingUsers.filter(id => id !== user?.id).length > 0 && (
-        <div className="px-4 py-2 border-t border-white/10">
+        <div className="px-3 lg:px-4 py-2 border-t border-white/10">
           <TypingIndicator 
             isVisible={true} 
             username={typingUsers.filter(id => id !== user?.id).map(id => {
